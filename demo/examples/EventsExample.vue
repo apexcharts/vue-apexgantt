@@ -5,16 +5,6 @@
       <p>Interactive demo showing task drag, resize, and update events</p>
     </div>
 
-    <div class="instructions">
-      <strong>Instructions:</strong>
-      <ul>
-        <li>Drag any task bar horizontally to move it to a new date</li>
-        <li>Hover over task edges and drag the handles to resize (change duration)</li>
-        <li>Double-click a task to edit it via the dialog</li>
-        <li>Watch the event log below to see all emitted events</li>
-      </ul>
-    </div>
-
     <div class="chart-wrapper">
       <ApexGanttChart
         :tasks="tasks"
@@ -32,14 +22,14 @@
         <h3>Event Log</h3>
         <button @click="clearEventLog" class="clear-button">Clear Log</button>
       </div>
-      
+
       <div class="event-log-content">
         <div v-if="events.length === 0" class="no-events">
           No events yet. Try dragging or resizing a task!
         </div>
-        
-        <div 
-          v-for="(event, index) in events" 
+
+        <div
+          v-for="(event, index) in events"
           :key="index"
           :class="['event-item', event.type]"
         >
@@ -53,15 +43,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { ApexGanttChart } from '../../src';
-import type { 
-  TaskInput, 
+import { ref } from "vue";
+import { ApexGanttChart } from "../../src";
+import type {
+  TaskInput,
   GanttUserOptions,
   TaskDraggedEventDetail,
   TaskResizedEventDetail,
-  TaskUpdateSuccessEventDetail
-} from '../../src';
+  TaskUpdateSuccessEventDetail,
+} from "../../src";
 
 interface EventLog {
   type: string;
@@ -71,57 +61,57 @@ interface EventLog {
 
 const tasks = ref<TaskInput[]>([
   {
-    id: 'task-1',
-    startTime: '11-01-2024',
-    endTime: '11-08-2024',
-    name: 'Project Planning',
+    id: "task-1",
+    startTime: "11-01-2024",
+    endTime: "11-08-2024",
+    name: "Project Planning",
     progress: 75,
   },
   {
-    id: 'task-2',
-    startTime: '11-04-2024',
-    endTime: '11-12-2024',
-    name: 'Development Phase',
+    id: "task-2",
+    startTime: "11-04-2024",
+    endTime: "11-12-2024",
+    name: "Development Phase",
     progress: 50,
   },
   {
-    id: 'task-2.1',
-    startTime: '11-04-2024',
-    endTime: '11-07-2024',
-    name: 'Backend Development',
-    parentId: 'task-2',
+    id: "task-2.1",
+    startTime: "11-04-2024",
+    endTime: "11-07-2024",
+    name: "Backend Development",
+    parentId: "task-2",
     progress: 60,
   },
   {
-    id: 'task-2.2',
-    startTime: '11-08-2024',
-    endTime: '11-12-2024',
-    name: 'Frontend Development',
-    parentId: 'task-2',
-    dependency: 'task-2.1',
+    id: "task-2.2",
+    startTime: "11-08-2024",
+    endTime: "11-12-2024",
+    name: "Frontend Development",
+    parentId: "task-2",
+    dependency: "task-2.1",
     progress: 40,
   },
   {
-    id: 'task-3',
-    startTime: '11-13-2024',
-    endTime: '11-15-2024',
-    name: 'Testing & QA',
-    dependency: 'task-2',
+    id: "task-3",
+    startTime: "11-13-2024",
+    endTime: "11-15-2024",
+    name: "Testing & QA",
+    dependency: "task-2",
     progress: 25,
   },
   {
-    id: 'task-4',
-    startTime: '11-16-2024',
-    endTime: '11-20-2024',
-    name: 'Deployment',
+    id: "task-4",
+    startTime: "11-16-2024",
+    endTime: "11-20-2024",
+    name: "Deployment",
     progress: 0,
   },
   {
-    id: 'milestone-1',
-    startTime: '11-21-2024',
-    name: 'Project Launch',
-    type: 'milestone',
-    dependency: 'task-4',
+    id: "milestone-1",
+    startTime: "11-21-2024",
+    name: "Project Launch",
+    type: "milestone",
+    dependency: "task-4",
   },
 ]);
 
@@ -139,8 +129,8 @@ const formatTime = (timestamp: number) => {
 };
 
 const handleTaskDragged = (detail: TaskDraggedEventDetail) => {
-  console.log('Task Dragged:', detail);
-  
+  console.log("Task Dragged:", detail);
+
   let detailsHtml = `
     <strong>Task ID:</strong> ${detail.taskId}<br>
     <strong>Days Moved:</strong> ${detail.daysMoved}<br>
@@ -152,32 +142,36 @@ const handleTaskDragged = (detail: TaskDraggedEventDetail) => {
     detailsHtml += `<br><strong>Affected Children:</strong> ${detail.affectedChildTasks.length} task(s)`;
   }
 
-  addEvent('drag', detail.timestamp, detailsHtml);
+  addEvent("drag", detail.timestamp, detailsHtml);
 };
 
 const handleTaskResized = (detail: TaskResizedEventDetail) => {
-  console.log('Task Resized:', detail);
-  
+  console.log("Task Resized:", detail);
+
   const detailsHtml = `
     <strong>Task ID:</strong> ${detail.taskId}<br>
     <strong>Handle:</strong> ${detail.resizeHandle}<br>
-    <strong>Duration Change:</strong> ${detail.durationChange > 0 ? '+' : ''}${detail.durationChange} days<br>
-    <strong>Old Dates:</strong> ${detail.oldStartTime} → ${detail.oldEndTime}<br>
+    <strong>Duration Change:</strong> ${detail.durationChange > 0 ? "+" : ""}${
+    detail.durationChange
+  } days<br>
+    <strong>Old Dates:</strong> ${detail.oldStartTime} → ${
+    detail.oldEndTime
+  }<br>
     <strong>New Dates:</strong> ${detail.newStartTime} → ${detail.newEndTime}
   `;
 
-  addEvent('resize', detail.timestamp, detailsHtml);
+  addEvent("resize", detail.timestamp, detailsHtml);
 };
 
 const handleTaskUpdateSuccess = (detail: TaskUpdateSuccessEventDetail) => {
-  console.log('Task Updated:', detail);
-  
+  console.log("Task Updated:", detail);
+
   const detailsHtml = `
     <strong>Task ID:</strong> ${detail.taskId}<br>
     <strong>Task Name:</strong> ${detail.updatedTask.name}
   `;
 
-  addEvent('update', detail.timestamp, detailsHtml);
+  addEvent("update", detail.timestamp, detailsHtml);
 };
 
 const addEvent = (type: string, timestamp: number, details: string) => {
