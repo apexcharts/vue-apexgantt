@@ -8,15 +8,10 @@ import type { CSSProperties } from "vue";
 import ApexGantt from "apexgantt";
 import type {
   GanttUserOptions,
+  GanttEventMap,
   TaskInput,
   ViewMode,
   ThemeMode,
-  TaskUpdateEventDetail,
-  TaskUpdateSuccessEventDetail,
-  TaskValidationErrorEventDetail,
-  TaskUpdateErrorEventDetail,
-  TaskDraggedEventDetail,
-  TaskResizedEventDetail,
 } from "apexgantt";
 import { GanttEvents } from "apexgantt";
 
@@ -31,13 +26,21 @@ export interface ApexGanttChartProps {
   style?: CSSProperties;
 }
 
+type EventDetail<K extends keyof GanttEventMap> =
+  GanttEventMap[K] extends CustomEvent<infer D> ? D : never;
+
 export interface ApexGanttChartEmits {
-  (e: "taskUpdate", detail: TaskUpdateEventDetail): void;
-  (e: "taskUpdateSuccess", detail: TaskUpdateSuccessEventDetail): void;
-  (e: "taskValidationError", detail: TaskValidationErrorEventDetail): void;
-  (e: "taskUpdateError", detail: TaskUpdateErrorEventDetail): void;
-  (e: "taskDragged", detail: TaskDraggedEventDetail): void;
-  (e: "taskResized", detail: TaskResizedEventDetail): void;
+  (e: "taskUpdate", detail: EventDetail<"taskUpdate">): void;
+  (e: "taskUpdateSuccess", detail: EventDetail<"taskUpdateSuccess">): void;
+  (e: "taskValidationError", detail: EventDetail<"taskValidationError">): void;
+  (e: "taskUpdateError", detail: EventDetail<"taskUpdateError">): void;
+  (e: "taskDragged", detail: EventDetail<"taskDragged">): void;
+  (e: "taskResized", detail: EventDetail<"taskResized">): void;
+  (e: "selectionChange", detail: EventDetail<"selectionChange">): void;
+  (
+    e: "dependencyArrowUpdate",
+    detail: EventDetail<"dependencyArrowUpdate">,
+  ): void;
 }
 
 export interface ApexGanttChartExpose {
@@ -69,7 +72,7 @@ const containerStyle = computed(
     height:
       typeof props.height === "number" ? `${props.height}px` : props.height,
     ...props.style,
-  })
+  }),
 );
 
 // compute full options
@@ -81,7 +84,7 @@ const fullOptions = computed(
     width: props.width,
     height: props.height,
     ...props.options,
-  })
+  }),
 );
 
 // event listeners
@@ -91,39 +94,51 @@ const setupEventListeners = (): void => {
   const container = chartContainer.value;
 
   container.addEventListener(GanttEvents.TASK_UPDATE, ((
-    e: CustomEvent<TaskUpdateEventDetail>
+    e: GanttEventMap["taskUpdate"],
   ) => {
     emit("taskUpdate", e.detail);
   }) as EventListener);
 
   container.addEventListener(GanttEvents.TASK_UPDATE_SUCCESS, ((
-    e: CustomEvent<TaskUpdateSuccessEventDetail>
+    e: GanttEventMap["taskUpdateSuccess"],
   ) => {
     emit("taskUpdateSuccess", e.detail);
   }) as EventListener);
 
   container.addEventListener(GanttEvents.TASK_VALIDATION_ERROR, ((
-    e: CustomEvent<TaskValidationErrorEventDetail>
+    e: GanttEventMap["taskValidationError"],
   ) => {
     emit("taskValidationError", e.detail);
   }) as EventListener);
 
   container.addEventListener(GanttEvents.TASK_UPDATE_ERROR, ((
-    e: CustomEvent<TaskUpdateErrorEventDetail>
+    e: GanttEventMap["taskUpdateError"],
   ) => {
     emit("taskUpdateError", e.detail);
   }) as EventListener);
 
   container.addEventListener(GanttEvents.TASK_DRAGGED, ((
-    e: CustomEvent<TaskDraggedEventDetail>
+    e: GanttEventMap["taskDragged"],
   ) => {
     emit("taskDragged", e.detail);
   }) as EventListener);
 
   container.addEventListener(GanttEvents.TASK_RESIZED, ((
-    e: CustomEvent<TaskResizedEventDetail>
+    e: GanttEventMap["taskResized"],
   ) => {
     emit("taskResized", e.detail);
+  }) as EventListener);
+
+  container.addEventListener(GanttEvents.SELECTION_CHANGE, ((
+    e: GanttEventMap["selectionChange"],
+  ) => {
+    emit("selectionChange", e.detail);
+  }) as EventListener);
+
+  container.addEventListener(GanttEvents.DEPENDENCY_ARROW_UPDATE, ((
+    e: GanttEventMap["dependencyArrowUpdate"],
+  ) => {
+    emit("dependencyArrowUpdate", e.detail);
   }) as EventListener);
 };
 
@@ -185,21 +200,21 @@ watch(
   () => {
     update({ series: props.tasks });
   },
-  { deep: true }
+  { deep: true },
 );
 
 watch(
   () => props.viewMode,
   (newMode: ViewMode) => {
     update({ viewMode: newMode });
-  }
+  },
 );
 
 watch(
   () => props.theme,
   (newTheme: ThemeMode) => {
     update({ theme: newTheme });
-  }
+  },
 );
 
 watch(
@@ -207,7 +222,7 @@ watch(
   (newOptions: Partial<GanttUserOptions> | undefined) => {
     update(newOptions || {});
   },
-  { deep: true }
+  { deep: true },
 );
 
 // lifecycle hooks

@@ -30,10 +30,8 @@
     "type-check": "vue-tsc --noEmit"
   },
   "peerDependencies": {
+    "apexgantt": "^3.9.0",
     "vue": "^3.3.0"
-  },
-  "dependencies": {
-    "apexgantt": "^3.4.1"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
