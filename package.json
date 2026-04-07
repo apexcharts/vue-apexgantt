@@ -1,6 +1,6 @@
 {
   "name": "vue-apexgantt",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Vue 3 wrapper for ApexGantt - Interactive Gantt chart library",
   "type": "module",
   "main": "./dist/vue-apexgantt.umd.js",
@@ -30,7 +30,7 @@
     "type-check": "vue-tsc --noEmit"
   },
   "peerDependencies": {
-    "apexgantt": "^3.9.0",
+    "apexgantt": ">=3.10.2",
     "vue": "^3.3.0"
   },
   "devDependencies": {
