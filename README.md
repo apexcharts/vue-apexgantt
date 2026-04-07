@@ -98,6 +98,8 @@ const tasks = ref<TaskInput[]>([
 | `taskUpdateError`     | `TaskUpdateErrorEventDetail`      | Fired when update fails            |
 | `taskDragged`         | `TaskDraggedEventDetail`          | Fired when a task is dragged       |
 | `taskResized`         | `TaskResizedEventDetail`          | Fired when a task is resized       |
+| `selectionChange`     | `SelectionChangeEventDetail`      | Fired when selected tasks change   |
+| `dependencyArrowUpdate` | `DependencyArrowUpdateEventDetail` | Fired when a dependency arrow is created, moved, or deleted |
 
 ### Event Handling Example
 
