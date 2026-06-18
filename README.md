@@ -1,6 +1,8 @@
-# Vue ApexGantt
+# Vue Gantt Chart Component — vue-apexgantt
 
-Vue 3 wrapper for [ApexGantt](https://github.com/apexcharts/apexgantt) - A JavaScript library to create interactive Gantt charts.
+A Vue 3 Gantt chart component for interactive project timelines. Render tasks, dependencies, milestones, critical path, baselines, and annotations as a fully drag-and-drop schedule — with reactive props, typed emits, a `useGanttData` composable, template refs, and Composition API support.
+
+📚 **Documentation:** [apexcharts.com/apexgantt/docs](https://apexcharts.com/apexgantt/docs/) · 🎬 **Live demos:** [apexcharts.com/apexgantt/demos](https://apexcharts.com/apexgantt/demos/) · 📦 **npm:** [vue-apexgantt](https://www.npmjs.com/package/vue-apexgantt) · 🌐 **Part of** [ApexGantt](https://apexcharts.com/apexgantt/) — one Gantt component for JavaScript, React, Angular, and Vue.
 
 ## Installation
 
@@ -98,8 +100,6 @@ const tasks = ref<TaskInput[]>([
 | `taskUpdateError`     | `TaskUpdateErrorEventDetail`      | Fired when update fails            |
 | `taskDragged`         | `TaskDraggedEventDetail`          | Fired when a task is dragged       |
 | `taskResized`         | `TaskResizedEventDetail`          | Fired when a task is resized       |
-| `selectionChange`     | `SelectionChangeEventDetail`      | Fired when selected tasks change   |
-| `dependencyArrowUpdate` | `DependencyArrowUpdateEventDetail` | Fired when a dependency arrow is created, moved, or deleted |
 
 ### Event Handling Example
 
@@ -391,13 +391,20 @@ The demo app will be available at `http://localhost:5173` and includes:
 
 ## Browser Support
 
+- Vue 3.3+ (Vue 2 is not supported)
 - Modern browsers (Chrome, Firefox, Safari, Edge)
 - Requires ES2020+ support
 
+## Related
+
+- [**ApexGantt — multi-framework hub**](https://apexcharts.com/apexgantt/) — overview across all supported frameworks
+- **Other ApexGantt wrappers:** [`react-apexgantt`](https://www.npmjs.com/package/react-apexgantt) · [`ngx-apexgantt`](https://www.npmjs.com/package/ngx-apexgantt) (Angular) · [`apexgantt`](https://www.npmjs.com/package/apexgantt) (JavaScript core)
+- **All ApexGantt demos:** [apexcharts.com/apexgantt/demos](https://apexcharts.com/apexgantt/demos/)
+
 ## License
 
-See LICENSE file for details.
+See [LICENSE](LICENSE) for details. Commercial licenses available at [apexcharts.com/pricing](https://apexcharts.com/pricing/).
 
-## Credits
+## About
 
-This is a Vue 3 wrapper for [ApexGantt](https://github.com/apexcharts/apexgantt).
+A Vue 3 wrapper for [ApexGantt](https://github.com/apexcharts/apexgantt) — a JavaScript library to create interactive Gantt charts.
