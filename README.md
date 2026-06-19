@@ -2,7 +2,7 @@
 
 A Vue 3 Gantt chart component for interactive project timelines. Render tasks, dependencies, milestones, critical path, baselines, and annotations as a fully drag-and-drop schedule — with reactive props, typed emits, a `useGanttData` composable, template refs, and Composition API support.
 
-📚 **Documentation:** [apexcharts.com/apexgantt/docs](https://apexcharts.com/apexgantt/docs/) · 🎬 **Live demos:** [apexcharts.com/apexgantt/demos](https://apexcharts.com/apexgantt/demos/) · 📦 **npm:** [vue-apexgantt](https://www.npmjs.com/package/vue-apexgantt) · 🌐 **Part of** [ApexGantt](https://apexcharts.com/apexgantt/) — one Gantt component for JavaScript, React, Angular, and Vue.
+📚 **Documentation:** [apexcharts.com/apexgantt/docs](https://apexcharts.com/apexgantt/docs/) · 🎬 **Live demos:** [apexcharts.com/apexgantt/demos](https://apexcharts.com/apexgantt/demos/) · 📦 **npm:** [vue-apexgantt](https://www.npmjs.com/package/vue-apexgantt) · 📖 **Guide:** [Vue Gantt Chart](https://apexcharts.com/vue-gantt-chart/) · 🌐 **Part of** [ApexGantt](https://apexcharts.com/apexgantt/) — one Gantt component for JavaScript, React, Angular, and Vue.
 
 ## Installation
 
