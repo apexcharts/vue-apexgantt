@@ -10,7 +10,6 @@ import type {
   GanttUserOptions,
   GanttEventMap,
   TaskInput,
-  ViewMode,
   ThemeMode,
 } from "apexgantt";
 import { GanttEvents } from "apexgantt";
@@ -20,7 +19,13 @@ export interface ApexGanttChartProps {
   options?: Partial<GanttUserOptions>;
   width?: string | number;
   height?: string | number;
-  viewMode?: ViewMode;
+  /**
+   * Continuous zoom level, in pixels-per-day. The header tier
+   * (year/quarter/month/week/day/hour/minute) is auto-picked from this value.
+   * Reference points: `0.5` ≈ year, `1.6` ≈ quarter, `4.9` ≈ month,
+   * `25.7` ≈ week, `80` = day.
+   */
+  pixelsPerDay?: number;
   theme?: ThemeMode;
   className?: string;
   style?: CSSProperties;
@@ -55,7 +60,7 @@ export interface ApexGanttChartExpose {
 const props = withDefaults(defineProps<ApexGanttChartProps>(), {
   width: "100%",
   height: "500px",
-  viewMode: "month" as ViewMode,
+  pixelsPerDay: 4.9,
   theme: "light" as ThemeMode,
   className: "",
 });
@@ -79,7 +84,7 @@ const containerStyle = computed(
 const fullOptions = computed(
   (): GanttUserOptions => ({
     series: props.tasks,
-    viewMode: props.viewMode,
+    pixelsPerDay: props.pixelsPerDay,
     theme: props.theme,
     width: props.width,
     height: props.height,
@@ -204,9 +209,9 @@ watch(
 );
 
 watch(
-  () => props.viewMode,
-  (newMode: ViewMode) => {
-    update({ viewMode: newMode });
+  () => props.pixelsPerDay,
+  (newValue: number) => {
+    update({ pixelsPerDay: newValue });
   },
 );
 

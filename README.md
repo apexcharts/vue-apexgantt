@@ -85,7 +85,7 @@ const tasks = ref<TaskInput[]>([
 | `options`   | `Partial<GanttUserOptions>`| `{}`      | ApexGantt configuration options                      |
 | `width`     | `string \| number`         | `'100%'`  | Chart width                                          |
 | `height`    | `string \| number`         | `'500px'` | Chart height                                         |
-| `viewMode`  | `ViewMode`                 | `'month'` | View mode: 'day', 'week', 'month', 'quarter', 'year' |
+| `pixelsPerDay` | `number`                | `4.9`     | Continuous zoom level (pixels-per-day). Header tier is auto-picked: `0.5` ≈ year, `4.9` ≈ month, `25.7` ≈ week, `80` = day |
 | `theme`     | `'light' \| 'dark'`        | `'light'` | Color theme                                          |
 | `className` | `string`                   | `''`      | CSS class name                                       |
 | `style`     | `CSSProperties`            | `{}`      | Inline styles                                        |
@@ -280,31 +280,30 @@ const ganttOptions: Partial<GanttUserOptions> = {
 </script>
 ```
 
-### Dynamic View Mode
+### Dynamic Zoom
 
 ```vue
 <template>
   <div>
-    <select v-model="viewMode">
-      <option value="day">Day</option>
-      <option value="week">Week</option>
-      <option value="month">Month</option>
-      <option value="quarter">Quarter</option>
-      <option value="year">Year</option>
+    <select v-model.number="pixelsPerDay">
+      <option :value="80">Day</option>
+      <option :value="25.7">Week</option>
+      <option :value="4.9">Month</option>
+      <option :value="1.6">Quarter</option>
+      <option :value="0.5">Year</option>
     </select>
     
     <ApexGanttChart
       :tasks="tasks"
-      :view-mode="viewMode"
+      :pixels-per-day="pixelsPerDay"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { ViewMode } from 'vue-apexgantt';
 
-const viewMode = ref<ViewMode>('month');
+const pixelsPerDay = ref(4.9);
 </script>
 ```
 
@@ -344,7 +343,6 @@ The package includes full TypeScript definitions. Import types as needed:
 import type {
   TaskInput,
   TaskType,
-  ViewMode,
   ThemeMode,
   GanttUserOptions,
   ParsingConfig,
