@@ -21,7 +21,7 @@
   },
   "files": [
     "dist",
-    "LICENSE"
+    "LICENSE.md"
   ],
   "scripts": {
     "dev": "vite",

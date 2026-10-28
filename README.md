@@ -401,7 +401,7 @@ The demo app will be available at `http://localhost:5173` and includes:
 
 ## License
 
-See [LICENSE](LICENSE) for details. Commercial licenses available at [apexcharts.com/pricing](https://apexcharts.com/pricing/).
+See [LICENSE](LICENSE.md) for details. Commercial licenses available at [apexcharts.com/pricing](https://apexcharts.com/pricing/).
 
 ## About
 
