@@ -2,18 +2,18 @@
   <div class="example-container">
     <div class="example-header">
       <h2>Advanced Example</h2>
-      <p>View mode switching, theme toggle, and custom options</p>
+      <p>Zoom level, theme toggle, and custom options</p>
     </div>
 
     <div class="controls">
       <div class="control-group">
-        <label>View Mode:</label>
-        <select v-model="viewMode" class="control-select">
-          <option value="day">Day</option>
-          <option value="week">Week</option>
-          <option value="month">Month</option>
-          <option value="quarter">Quarter</option>
-          <option value="year">Year</option>
+        <label>Zoom:</label>
+        <select v-model.number="pixelsPerDay" class="control-select">
+          <option :value="80">Day</option>
+          <option :value="25.7">Week</option>
+          <option :value="4.9">Month</option>
+          <option :value="1.6">Quarter</option>
+          <option :value="0.5">Year</option>
         </select>
       </div>
 
@@ -41,7 +41,7 @@
       <ApexGanttChart
         ref="ganttRef"
         :tasks="tasks"
-        :view-mode="viewMode"
+        :pixels-per-day="pixelsPerDay"
         :theme="theme"
         :options="ganttOptions"
         height="600px"
@@ -53,10 +53,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { ApexGanttChart } from '../../src';
-import type { TaskInput, ViewMode, ThemeMode, GanttUserOptions } from '../../src';
+import type { TaskInput, ThemeMode, GanttUserOptions } from '../../src';
 
 const ganttRef = ref<InstanceType<typeof ApexGanttChart> | null>(null);
-const viewMode = ref<ViewMode>('month');
+const pixelsPerDay = ref(4.9);
 const theme = ref<ThemeMode>('light');
 const enableDrag = ref(true);
 const enableResize = ref(true);

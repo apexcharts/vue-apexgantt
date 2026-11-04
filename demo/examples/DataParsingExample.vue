@@ -16,7 +16,11 @@
     </div>
 
     <div class="chart-wrapper">
-      <ApexGanttChart :tasks="parsedTasks" view-mode="month" height="500px" />
+      <ApexGanttChart
+        :tasks="parsedTasks"
+        :pixels-per-day="4.9"
+        height="500px"
+      />
     </div>
   </div>
 </template>
@@ -133,7 +137,7 @@ const parsingConfig: ParsingConfig = {
   endTime: "project.task.details.dates.end",
   progress: {
     key: "project.metadata.completion_percentage",
-    transform: (value: number) => value * 100, // convert to percentage
+    transform: (value) => Number(value) * 100, // convert to percentage
   },
   barBackgroundColor: "project.styling.colors.bar",
   rowBackgroundColor: "project.styling.colors.row",

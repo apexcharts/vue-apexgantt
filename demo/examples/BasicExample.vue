@@ -18,7 +18,7 @@
       <ApexGanttChart
         ref="ganttRef"
         :tasks="tasks"
-        :view-mode="viewMode"
+        :pixels-per-day="pixelsPerDay"
         :theme="theme"
         height="500px"
       />
@@ -28,11 +28,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ApexGanttChart } from '../../src';
-import type { TaskInput, ViewMode, ThemeMode } from '../../src';
+import { ApexGanttChart, TaskType } from '../../src';
+import type { TaskInput, ThemeMode } from '../../src';
 
 const ganttRef = ref<InstanceType<typeof ApexGanttChart> | null>(null);
-const viewMode = ref<ViewMode>('week');
+// week-level zoom (80 = day, 4.9 = month)
+const pixelsPerDay = ref(25.7);
 const theme = ref<ThemeMode>('light');
 
 const tasks = ref<TaskInput[]>([
@@ -86,7 +87,7 @@ const tasks = ref<TaskInput[]>([
     id: 'milestone-1',
     startTime: '01-21-2024',
     name: 'Project Launch',
-    type: 'milestone',
+    type: TaskType.Milestone,
     dependency: 'task-4',
   },
 ]);

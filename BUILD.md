@@ -86,7 +86,7 @@ vue-apexgantt/
 
 - The component uses Vue 3 Composition API exclusively (no Options API)
 - Events from ApexGantt's CustomEvents are re-emitted as Vue events
-- The component is reactive to prop changes (tasks, viewMode, theme, options)
+- The component is reactive to prop changes (tasks, pixelsPerDay, theme, width, height, options), and each change sends only that change to the chart
 - Template ref methods allow programmatic control (zoom, update, etc.)
 - The demo app is configured to run with `npm run dev` and uses the local src/ files
 - For production, the library should be built with `npm run build` before publishing

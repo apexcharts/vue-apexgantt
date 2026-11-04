@@ -8,7 +8,7 @@
     <div class="chart-wrapper">
       <ApexGanttChart
         :tasks="tasks"
-        view-mode="week"
+        :pixels-per-day="25.7"
         :options="ganttOptions"
         height="400px"
         @task-dragged="handleTaskDragged"
@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { ApexGanttChart } from "../../src";
+import { ApexGanttChart, TaskType } from "../../src";
 import type {
   TaskInput,
   GanttUserOptions,
@@ -110,7 +110,7 @@ const tasks = ref<TaskInput[]>([
     id: "milestone-1",
     startTime: "11-21-2024",
     name: "Project Launch",
-    type: "milestone",
+    type: TaskType.Milestone,
     dependency: "task-4",
   },
 ]);

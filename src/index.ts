@@ -43,16 +43,27 @@ export type {
   ToolbarContext,
   ColumnListItem,
 
-  // Typed event map and detail interfaces
+  // Typed event map and detail interfaces (one per emitted event)
   GanttEventMap,
   TaskUpdateEventDetail,
   TaskUpdateSuccessEventDetail,
   TaskUpdateErrorEventDetail,
   TaskValidationErrorEventDetail,
+  TaskAddedEventDetail,
+  TaskDeletedEventDetail,
+  TaskMovedEventDetail,
+  DependencyChangeEventDetail,
   TaskDraggedEventDetail,
   TaskResizedEventDetail,
+  TaskProgressChangedEventDetail,
   SelectionChangeEventDetail,
   DependencyArrowUpdateDetail,
+  HistoryChangeEventDetail,
+  SortChangeEventDetail,
+  FilterChangeEventDetail,
+  GroupChangeEventDetail,
+  ColumnResizeEventDetail,
+  ColumnReorderEventDetail,
 } from "apexgantt";
 
 // Value re-exports (needed at runtime)

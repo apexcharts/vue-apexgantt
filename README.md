@@ -14,18 +14,11 @@ yarn add vue-apexgantt apexgantt
 pnpm add vue-apexgantt apexgantt
 ```
 
-## License Setup
+## Licence Setup
 
-If you have a commercial license, set it once at app initialization before rendering any charts:
+ApexGantt is included in the Premium plan and above and has no free tier. Without a key it renders with a trial watermark for evaluation. Plans and keys are at [apexcharts.com/pricing](https://apexcharts.com/pricing/).
 
-```ts
-import { setApexGanttLicense } from 'vue-apexgantt';
-
-// call this at the top of your app
-setApexGanttLicense('your-license-key-here');
-```
-
-**Example with Vue app entry point:**
+Set your licence key once at application start, before the first chart renders:
 
 ```ts
 // main.ts
@@ -33,11 +26,12 @@ import { createApp } from 'vue';
 import { setApexGanttLicense } from 'vue-apexgantt';
 import App from './App.vue';
 
-// set license before rendering
 setApexGanttLicense('your-license-key-here');
 
 createApp(App).mount('#app');
 ```
+
+A key set after charts are on the page still removes the watermark from them; setting it first avoids a one-frame watermark.
 
 ## Quick Start
 
@@ -45,7 +39,7 @@ createApp(App).mount('#app');
 <template>
   <ApexGanttChart
     :tasks="tasks"
-    view-mode="week"
+    :pixels-per-day="25.7"
     height="500px"
   />
 </template>
@@ -75,31 +69,51 @@ const tasks = ref<TaskInput[]>([
 </script>
 ```
 
+`pixelsPerDay` sets the zoom: `80` shows days, `25.7` weeks, `4.9` months, `1.6` quarters and `0.5` years. Any value in between works, and the header levels follow. Leave it out and the chart fits its zoom to the data span when it first renders.
+
 ## API Reference
 
 ### Component Props
 
-| Prop        | Type                       | Default   | Description                                          |
-| ----------- | -------------------------- | --------- | ---------------------------------------------------- |
-| `tasks`     | `TaskInput[]`              | Required  | Array of tasks to display                            |
-| `options`   | `Partial<GanttUserOptions>`| `{}`      | ApexGantt configuration options                      |
-| `width`     | `string \| number`         | `'100%'`  | Chart width                                          |
-| `height`    | `string \| number`         | `'500px'` | Chart height                                         |
-| `pixelsPerDay` | `number`                | `4.9`     | Continuous zoom level (pixels-per-day). Header tier is auto-picked: `0.5` ≈ year, `4.9` ≈ month, `25.7` ≈ week, `80` = day |
-| `theme`     | `'light' \| 'dark'`        | `'light'` | Color theme                                          |
-| `className` | `string`                   | `''`      | CSS class name                                       |
-| `style`     | `CSSProperties`            | `{}`      | Inline styles                                        |
+| Prop           | Type                        | Default   | Description |
+| -------------- | --------------------------- | --------- | ----------- |
+| `tasks`        | `TaskInput[]`               | Required  | Tasks to display. A change replaces the chart's data (see [Prop changes and edits](#prop-changes-and-edits)) |
+| `options`      | `Partial<GanttUserOptions>` | `{}`      | Any other ApexGantt option. Keys set here win over the matching props |
+| `width`        | `string \| number`          | `'100%'`  | Chart width. A number is read as pixels |
+| `height`       | `string \| number`          | `undefined` | Chart height. A number is read as pixels. Leave it out to size the chart from CSS on the component; with neither, it is 500px tall |
+| `pixelsPerDay` | `number`                    | auto-fit  | Continuous zoom level (pixels per day). Header tier is auto-picked: `0.5` ≈ year, `1.6` ≈ quarter, `4.9` ≈ month, `25.7` ≈ week, `80` = day. When omitted, the chart fits its zoom to the data span on first render. Sent only when it changes to a number, so a zoom made from the toolbar survives other prop changes, and unsetting it keeps the current zoom |
+| `theme`        | `'light' \| 'dark'`         | `'light'` | Colour theme |
+| `className`    | `string`                    | `''`      | Class added to the chart container |
+| `style`        | `CSSProperties`             | `{}`      | Inline styles added to the chart container |
 
 ### Component Events
 
-| Event                 | Payload Type                      | Description                        |
-| --------------------- | --------------------------------- | ---------------------------------- |
-| `taskUpdate`          | `TaskUpdateEventDetail`           | Fired when a task is being updated |
-| `taskUpdateSuccess`   | `TaskUpdateSuccessEventDetail`    | Fired after successful task update |
-| `taskValidationError` | `TaskValidationErrorEventDetail`  | Fired when validation fails        |
-| `taskUpdateError`     | `TaskUpdateErrorEventDetail`      | Fired when update fails            |
-| `taskDragged`         | `TaskDraggedEventDetail`          | Fired when a task is dragged       |
-| `taskResized`         | `TaskResizedEventDetail`          | Fired when a task is resized       |
+The component re-emits every ApexGantt event under the core's name, with the core's detail object as the only argument. In a template, listen with the kebab-case form (`@task-update-success`). Every detail type is exported from `vue-apexgantt`.
+
+| Event                   | Template listener          | Detail type                      | Fires when |
+| ----------------------- | -------------------------- | -------------------------------- | ---------- |
+| `taskUpdate`            | `@task-update`             | `TaskUpdateEventDetail`          | A task edit is committed, once per edit on every path: drag, resize, progress handle, task dialog, inline edit, keyboard and `updateTask()`. `detail.source` names the path. Not fired for undo/redo or a `silent` update |
+| `taskUpdateSuccess`     | `@task-update-success`     | `TaskUpdateSuccessEventDetail`   | That edit completes. Same paths and `source` as `taskUpdate` |
+| `taskValidationError`   | `@task-validation-error`   | `TaskValidationErrorEventDetail` | The task form fails validation |
+| `taskUpdateError`       | `@task-update-error`       | `TaskUpdateErrorEventDetail`     | A task update fails |
+| `taskAdded`             | `@task-added`              | `TaskAddedEventDetail`           | A task is added |
+| `taskDeleted`           | `@task-deleted`            | `TaskDeletedEventDetail`         | A task is deleted (one event per removed task) |
+| `taskMoved`             | `@task-moved`              | `TaskMovedEventDetail`           | A task is moved to a different parent |
+| `dependencyAdded`       | `@dependency-added`        | `DependencyChangeEventDetail`    | A dependency link is added |
+| `dependencyRemoved`     | `@dependency-removed`      | `DependencyChangeEventDetail`    | A dependency link is removed |
+| `taskDragged`           | `@task-dragged`            | `TaskDraggedEventDetail`         | A bar is moved along the timeline and the change is accepted |
+| `taskResized`           | `@task-resized`            | `TaskResizedEventDetail`         | A bar is resized and the change is accepted |
+| `taskProgressChanged`   | `@task-progress-changed`   | `TaskProgressChangedEventDetail` | Progress is changed with the in-bar handle and the change is accepted |
+| `selectionChange`       | `@selection-change`        | `SelectionChangeEventDetail`     | The selected tasks change (needs `enableSelection`) |
+| `dependencyArrowUpdate` | `@dependency-arrow-update` | `DependencyArrowUpdateDetail`    | Internal arrow redraw signal, not a change notification. Use `dependencyAdded` and `dependencyRemoved` for link changes |
+| `historyChange`         | `@history-change`          | `HistoryChangeEventDetail`       | The undo/redo history changes (record, undo, redo or clear) |
+| `sortChange`            | `@sort-change`             | `SortChangeEventDetail`          | The active sort changes |
+| `filterChange`          | `@filter-change`           | `FilterChangeEventDetail`        | The active filter changes |
+| `groupChange`           | `@group-change`            | `GroupChangeEventDetail`         | The active grouping changes |
+| `columnResize`          | `@column-resize`           | `ColumnResizeEventDetail`        | A task-list column is resized |
+| `columnReorder`         | `@column-reorder`          | `ColumnReorderEventDetail`       | Task-list columns are reordered |
+
+A drag fires `taskDragged` and also `taskUpdate` and `taskUpdateSuccess`, so an app that saves on both `taskDragged` and `taskUpdateSuccess` saves the same drag twice. Saving on `taskUpdateSuccess` alone covers every way a task is edited. To save the whole chart, links included, read it from the instance instead (see [Saving the Chart](#saving-the-chart)).
 
 ### Event Handling Example
 
@@ -135,9 +149,18 @@ const handleTaskUpdateSuccess = (detail: TaskUpdateSuccessEventDetail) => {
 </script>
 ```
 
-### Template Ref Methods
+### Exposed Methods
 
-Access chart methods using template ref:
+A template ref gives you these methods (typed as `ApexGanttChartExpose`):
+
+| Method | Description |
+| ------ | ----------- |
+| `update(options)` | Passes `options` (`Partial<GanttUserOptions>`) straight to the chart's `update()`. Props are not merged in. Leave out `series` and `parsing` to keep the chart's data, edits included |
+| `updateTask(taskId, updates, options?)` | Updates one task, with the same arguments as the chart's `updateTask()`. `{ silent: true }` skips `taskUpdate` and `taskUpdateSuccess`, for rollbacks and server echoes |
+| `zoomIn()` | Zooms in one step |
+| `zoomOut()` | Zooms out one step |
+| `destroy()` | Removes the event listeners and destroys the chart. The component does this itself when it unmounts |
+| `getInstance()` | The `ApexGantt` instance, or `null` before mount and after `destroy()`. Use it for every method not wrapped here: `getTask`, `getTasks`, `getDependencies`, `addTask`, `deleteTask`, `moveTask`, `expandTask`, `collapseTask`, `scrollToTask`, `undo`, `redo`, `sort`, `filter`, `groupBy`, `getState`, `setState`, `exportChart` and the rest |
 
 ```vue
 <template>
@@ -145,9 +168,10 @@ Access chart methods using template ref:
     ref="ganttRef"
     :tasks="tasks"
   />
-  
-  <button @click="handleZoomIn">Zoom In</button>
-  <button @click="handleZoomOut">Zoom Out</button>
+
+  <button @click="ganttRef?.zoomIn()">Zoom In</button>
+  <button @click="ganttRef?.zoomOut()">Zoom Out</button>
+  <button @click="showTask('task-2')">Show task 2</button>
 </template>
 
 <script setup lang="ts">
@@ -156,22 +180,51 @@ import { ApexGanttChart } from 'vue-apexgantt';
 
 const ganttRef = ref<InstanceType<typeof ApexGanttChart> | null>(null);
 
-const handleZoomIn = () => {
-  ganttRef.value?.zoomIn();
+const showTask = (id: string) => {
+  // opens collapsed parents, then scrolls the row into view
+  ganttRef.value?.getInstance()?.scrollToTask(id);
 };
-
-const handleZoomOut = () => {
-  ganttRef.value?.zoomOut();
-};
-
-// available methods:
-// ganttRef.value?.update(options)
-// ganttRef.value?.updateTask(taskId, data)
-// ganttRef.value?.zoomIn()
-// ganttRef.value?.zoomOut()
-// ganttRef.value?.destroy()
-// ganttRef.value?.getInstance() // get raw ApexGantt instance
 </script>
+```
+
+### Prop Changes and Edits
+
+Edits made in the chart (dragging, resizing, the task dialog, inline editing, the keyboard, `updateTask`, `addTask`, `deleteTask`, `moveTask` and link changes) are stored in the chart. The component sends only what changed:
+
+| Change | Sent to the chart's `update()` |
+| ------ | ------------------------------ |
+| `tasks` (a new array, or a change inside it) | `{ series }`, which replaces the chart's data: edits made in the chart are discarded and undo history is cleared |
+| `pixelsPerDay` | `{ pixelsPerDay }`, or nothing when it is unset (the chart keeps its zoom) |
+| `theme` | `{ theme }` plus your `options` (without `series`, `parsing` and `pixelsPerDay`). From apexgantt 3.20.0 a theme switch resets the colours the theme owns (`barBackgroundColor`, `rowBackgroundColors` and the rest) to the new theme's defaults unless the same update passes them, so resending `options` keeps your custom colours |
+| `width`, `height` | `{ width }`, `{ height }` |
+| `options` | Only the keys whose values changed. A key you remove falls back to the matching prop, or to the chart's default |
+
+Any update that leaves out `series` and `parsing` keeps the chart's data, edits included, and keeps a zoom made from the toolbar unless `pixelsPerDay` is part of it.
+
+To save task edits as they happen, listen to `taskUpdateSuccess` (and `taskAdded`, `taskDeleted` and `taskMoved` for structural changes). Writing them back into the array bound to `tasks` sends the whole array again as `series`, which re-renders the chart and clears undo history, so change `tasks` when you mean to replace the data.
+
+### Saving the Chart
+
+To save the chart as the user left it, read it from the instance: `getTasks()` returns every task with its edits, and `getDependencies()` returns every link as it is now (`{ fromId, toId, type, lag }`), including links added with `addDependency()` or drawn by the user, less any removed. A task's `dependency` holds only the link it was loaded with, so save both rather than rebuilding the links from `dependencyAdded` and `dependencyRemoved`. Both need apexgantt 3.20.0.
+
+```ts
+import type { DependencyLink } from 'apexgantt';
+
+const save = () => {
+  const gantt = ganttRef.value?.getInstance();
+  if (gantt) saveChart({ tasks: gantt.getTasks(), links: gantt.getDependencies() });
+};
+
+// once the saved tasks are rendered (bound to `tasks`)
+const restoreLinks = (links: DependencyLink[]) => {
+  const gantt = ganttRef.value?.getInstance();
+  if (!gantt) return;
+  for (const { fromId, toId, type, lag } of links) {
+    // the links the tasks carry are already there and are not accepted again
+    if (gantt.canAddDependency(fromId, toId).ok) gantt.addDependency(fromId, toId, { type, lag });
+  }
+  gantt.clearHistory(); // so the restore cannot be undone
+};
 ```
 
 ## Composables
@@ -206,7 +259,7 @@ const parsingConfig: ParsingConfig = {
   endTime: 'end_date',
   progress: {
     key: 'completion',
-    transform: (value) => value * 100, // convert to percentage
+    transform: (value) => Number(value) * 100, // convert to percentage
   },
 };
 
@@ -246,7 +299,7 @@ const tasks = useGanttData({
     endTime: 'project.dates.end',
     progress: {
       key: 'project.status.completion',
-      transform: (value) => value * 100,
+      transform: (value) => Number(value) * 100,
     },
   },
 });
@@ -261,7 +314,7 @@ const tasks = useGanttData({
   <ApexGanttChart
     :tasks="tasks"
     :options="ganttOptions"
-    view-mode="week"
+    :pixels-per-day="25.7"
     theme="dark"
   />
 </template>
@@ -335,20 +388,31 @@ const toggleTheme = () => {
 </script>
 ```
 
+Switching the theme keeps the chart's data, edits and zoom.
+
 ## TypeScript Support
 
 The package includes full TypeScript definitions. Import types as needed:
 
 ```ts
 import type {
-  TaskInput,
-  TaskType,
-  ThemeMode,
+  // component
+  ApexGanttChartProps,
+  ApexGanttChartEmits,
+  ApexGanttChartExpose,
+
+  // options and tasks
   GanttUserOptions,
+  ThemeMode,
+  TaskInput,
+  Task,
+  TaskType,
   ParsingConfig,
+
+  // event details, one per event in the table above
   TaskUpdateEventDetail,
   TaskDraggedEventDetail,
-  TaskResizedEventDetail,
+  HistoryChangeEventDetail,
   // ...more types
 } from 'vue-apexgantt';
 ```
@@ -383,7 +447,7 @@ npm run dev
 The demo app will be available at `http://localhost:5173` and includes:
 
 - **Basic Example**: Simple Gantt with zoom controls
-- **Advanced Example**: View mode switching, theme toggle, interaction controls
+- **Advanced Example**: Zoom level select, theme toggle, interaction controls
 - **Events Example**: Interactive testing of drag, resize, and update events
 - **Data Parsing Example**: Using `useGanttData` with nested data structures
 
