@@ -210,20 +210,38 @@ const containerStyle = computed(
 // event listeners, kept so they can be removed again
 let removeListeners: (() => void) | null = null;
 
+/**
+ * Events the core dispatches on the document (or the shadow root holding the
+ * chart) without bubbling, rather than on the chart container. Every chart on
+ * the page hears them, so the listener keeps only this chart's by
+ * `chartInstanceId`.
+ */
+const ROOT_EVENTS: ReadonlySet<GanttEventName> = new Set<GanttEventName>([
+  "dependencyArrowUpdate",
+]);
+
 const addListeners = (container: HTMLElement): void => {
   removeListeners?.();
+  const root = container.getRootNode();
   const names = Object.keys(EVENT_TABLE) as GanttEventName[];
   const listeners = names.map((name) => {
     const forward = EVENT_TABLE[name] as (detail: unknown) => void;
+    const onRoot = ROOT_EVENTS.has(name);
+    const target: EventTarget = onRoot ? root : container;
     const listener = (event: Event): void => {
-      forward((event as CustomEvent).detail);
+      const detail = (event as CustomEvent).detail;
+      if (onRoot) {
+        const id = ganttInstance.value?.getInstanceId();
+        if (!id || (detail as { chartInstanceId?: string } | null)?.chartInstanceId !== id) return;
+      }
+      forward(detail);
     };
-    container.addEventListener(name, listener);
-    return [name, listener] as const;
+    target.addEventListener(name, listener);
+    return [target, name, listener] as const;
   });
   removeListeners = () => {
-    for (const [name, listener] of listeners) {
-      container.removeEventListener(name, listener);
+    for (const [target, name, listener] of listeners) {
+      target.removeEventListener(name, listener);
     }
     removeListeners = null;
   };
