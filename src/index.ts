@@ -64,6 +64,15 @@ export type {
   GroupChangeEventDetail,
   ColumnResizeEventDetail,
   ColumnReorderEventDetail,
+
+  // apexgantt 3.20 API types
+  DependencyLink,
+  TaskUpdateSource,
+  GanttUpdateOptions,
+  ScrollToTaskOptions,
+  UpdateTaskOptions,
+  TooltipTemplate,
+  TooltipTemplateContext,
 } from "apexgantt";
 
 // Value re-exports (needed at runtime)
