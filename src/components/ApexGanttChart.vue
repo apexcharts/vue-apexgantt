@@ -18,7 +18,6 @@ import type {
   GanttUserOptions,
   GanttEventMap,
   TaskInput,
-  ThemeMode,
   TaskUpdateEventDetail,
   TaskUpdateSuccessEventDetail,
   TaskValidationErrorEventDetail,
@@ -70,8 +69,15 @@ export interface ApexGanttChartProps {
    * changes, and unsetting it keeps the current zoom.
    */
   pixelsPerDay?: number;
-  /** Colour theme. @default 'light' */
-  theme?: ThemeMode;
+  /**
+   * Colour theme: `'light'`, `'dark'`, or the name of a theme registered on
+   * the family registry (apexgantt 3.21.0 and later). Leave it out and the
+   * chart is light, or follows the dark variant of a design system loaded on
+   * the page (the `apexgantt/ignite-ui` add-on). Left out of the chart's
+   * options while unset; unsetting it after mount sends `theme: undefined`,
+   * the core's reset.
+   */
+  theme?: NonNullable<GanttUserOptions["theme"]>;
   /** Class added to the chart container. @default '' */
   className?: string;
   /** Inline styles added to the chart container. */
@@ -151,7 +157,7 @@ type PropBackedKey = "series" | "pixelsPerDay" | "theme" | "width" | "height";
 const props = withDefaults(defineProps<ApexGanttChartProps>(), {
   width: "100%",
   // no pixelsPerDay default: the core fits the zoom to the data when it is left out
-  theme: "light" as ThemeMode,
+  // no theme default: an unset theme lets the chart follow a design system's variant
   className: "",
 });
 
@@ -256,7 +262,8 @@ const propValues = (): Pick<GanttUserOptions, PropBackedKey> => ({
   ...(props.pixelsPerDay === undefined
     ? {}
     : { pixelsPerDay: props.pixelsPerDay }),
-  theme: props.theme,
+  // left out when unset, so a design system's dark variant can win
+  ...(props.theme === undefined ? {} : { theme: props.theme }),
   width: props.width,
   height: props.height,
 });
@@ -354,6 +361,7 @@ watch(
 
 // A theme change resets every option the core does not carry over to the new
 // theme's default, so the user's options go with it (data and zoom stay put).
+// Unsetting the prop sends `theme: undefined`, the core's reset.
 watch(
   () => props.theme,
   (theme) => {

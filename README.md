@@ -82,7 +82,7 @@ const tasks = ref<TaskInput[]>([
 | `width`        | `string \| number`          | `'100%'`  | Chart width. A number is read as pixels |
 | `height`       | `string \| number`          | `undefined` | Chart height. A number is read as pixels. Leave it out to size the chart from CSS on the component; with neither, it is 500px tall |
 | `pixelsPerDay` | `number`                    | auto-fit  | Continuous zoom level (pixels per day). Header tier is auto-picked: `0.5` ≈ year, `1.6` ≈ quarter, `4.9` ≈ month, `25.7` ≈ week, `80` = day. When omitted, the chart fits its zoom to the data span on first render. Sent only when it changes to a number, so a zoom made from the toolbar survives other prop changes, and unsetting it keeps the current zoom |
-| `theme`        | `'light' \| 'dark'`         | `'light'` | Colour theme |
+| `theme`        | `'light' \| 'dark' \| string` | `undefined` | Colour theme, or the name of a registered theme (from ApexGantt 3.21.0). Left unset, the chart is light, or follows the dark variant of an Ignite UI theme (see [Using with Ignite UI](#using-with-ignite-ui)). Unsetting it after it was set sends `theme: undefined`, the core's reset |
 | `className`    | `string`                    | `''`      | Class added to the chart container |
 | `style`        | `CSSProperties`             | `{}`      | Inline styles added to the chart container |
 
@@ -195,7 +195,7 @@ Edits made in the chart (dragging, resizing, the task dialog, inline editing, th
 | ------ | ------------------------------ |
 | `tasks` (a new array, or a change inside it) | `{ series }`, which replaces the chart's data: edits made in the chart are discarded and undo history is cleared |
 | `pixelsPerDay` | `{ pixelsPerDay }`, or nothing when it is unset (the chart keeps its zoom) |
-| `theme` | `{ theme }` plus your `options` (without `series`, `parsing` and `pixelsPerDay`). From apexgantt 3.20.0 a theme switch resets the colours the theme owns (`barBackgroundColor`, `rowBackgroundColors` and the rest) to the new theme's defaults unless the same update passes them, so resending `options` keeps your custom colours |
+| `theme` | `{ theme }` (`theme: undefined` when it is unset) plus your `options` (without `series`, `parsing` and `pixelsPerDay`). From apexgantt 3.20.0 a theme switch resets the colours the theme owns (`barBackgroundColor`, `rowBackgroundColors` and the rest) to the new theme's defaults unless the same update passes them, so resending `options` keeps your custom colours |
 | `width`, `height` | `{ width }`, `{ height }` |
 | `options` | Only the keys whose values changed. A key you remove falls back to the matching prop, or to the chart's default |
 
@@ -389,6 +389,23 @@ const toggleTheme = () => {
 ```
 
 Switching the theme keeps the chart's data, edits and zoom.
+
+### Using with Ignite UI
+
+From ApexGantt 3.21.0 the chart can follow an Ignite UI theme loaded on the page: bars, text, gridlines, the header, the tooltip, the font, and light or dark. The theming is a free add-on in the `apexgantt` package. Import it once, before the first chart renders:
+
+```ts
+// main.ts
+import 'apexgantt/ignite-ui';
+```
+
+Without a bundler, load `apexgantt.ignite-ui.min.js` with a script tag, before or after `apexgantt.min.js`.
+
+- Leave `theme` and `backgroundColor` unset (the `theme` prop and both keys in `options`) to follow the Ignite UI variant: a dark Ignite UI theme gives the chart its dark colours. A `theme` or `backgroundColor` you set wins over the variant.
+- `theme` also takes the name of a theme registered with `registerTheme` from the `apex-commons` package (`import { registerTheme } from 'apex-commons'`). The registry is shared by every Apex product on the page; the ApexGantt README ("Named themes") lists the tokens a theme can set.
+- An option you pass, an `--apex-gantt-*` variable and an `--apx-*` token all win over the Ignite UI tokens.
+- `:options="{ designSystem: false }"` turns the add-on off for one chart; `:options="{ tokens: false }"` stops the chart reading the `--apx-*` tokens and the design system.
+- There is no `refreshTokens()`: the chart reads the tokens each time it renders, so after swapping the Ignite UI stylesheet call `ganttRef.value?.getInstance()?.render()` (any prop change that updates the chart does the same).
 
 ## TypeScript Support
 
